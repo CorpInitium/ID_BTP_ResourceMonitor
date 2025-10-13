@@ -23,6 +23,7 @@ export async function getAccessToken(): Promise<string> {
   }
 
   const data = await response.json();
+  console.log(data)
 
   if (!data.access_token) {
     throw new Error('No access token received from authentication service');
