@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 export async function getAccessToken(): Promise<string> {
   const authUrl = process.env.SAP_AUTH_URL;
   const username = process.env.SAP_USERNAME;

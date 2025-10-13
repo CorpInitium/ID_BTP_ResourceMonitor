@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export async function fetchUsageData(fromDate: string, toDate: string): Promise<UsageRecord[]> {
   try {
-    const url = `${API_BASE_URL}/api/usage?fromDate=${fromDate}&toDate=${toDate}`;
+    const url = `/api/usage?fromDate=${fromDate}&toDate=${toDate}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -33,7 +33,7 @@ export async function fetchUsageData(fromDate: string, toDate: string): Promise<
 
 export async function fetchCostData(): Promise<CostRecord[]> {
   try {
-    const url = `${API_BASE_URL}/api/cost`;
+    const url = `/api/cost`;
 
     const response = await fetch(url, {
       method: 'GET',
