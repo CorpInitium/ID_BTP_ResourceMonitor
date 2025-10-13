@@ -1,4 +1,5 @@
 import express from 'express';
+import { getAccessToken } from '../utils/auth';
 
 const router = express.Router();
 
@@ -11,27 +12,26 @@ router.get('/', async (req, res) => {
     }
 
     const sapApiUrl = process.env.SAP_USAGE_API_URL;
-    const sapUsername = process.env.SAP_USERNAME;
-    const sapPassword = process.env.SAP_PASSWORD;
 
-    if (!sapApiUrl || !sapUsername || !sapPassword) {
-      return res.status(500).json({ error: 'SAP API configuration is missing' });
+    if (!sapApiUrl) {
+      return res.status(500).json({ error: 'SAP Usage API URL is not configured' });
     }
 
-    const credentials = Buffer.from(`${sapUsername}:${sapPassword}`).toString('base64');
+    const token = await getAccessToken();
 
     const url = `${sapApiUrl}?$filter=reportYearMonth ge ${fromDate} and reportYearMonth le ${toDate}`;
 
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Authorization': `Basic ${credentials}`,
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error(`SAP API returned ${response.status}: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`SAP API returned ${response.status}: ${response.statusText} - ${errorText}`);
     }
 
     const data = await response.json();

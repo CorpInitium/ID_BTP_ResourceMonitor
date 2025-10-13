@@ -24,11 +24,17 @@ Create a `.env` file in the root directory with the following variables:
 ```
 VITE_API_URL=http://localhost:3001
 
-SAP_USERNAME=your_sap_username
-SAP_PASSWORD=your_sap_password
-SAP_USAGE_API_URL=your_sap_usage_api_url
-SAP_COST_API_URL=your_sap_cost_api_url
+SAP_AUTH_URL=https://your-auth-domain.authentication.eu10.hana.ondemand.com/oauth/token?grant_type=client_credentials&response_type=token
+SAP_USERNAME=your_sap_client_id
+SAP_PASSWORD=your_sap_client_secret
+SAP_USAGE_API_URL=https://uas-reporting.cfapps.eu10.hana.ondemand.com/odata/MonthlySubaccountUsage
+SAP_COST_API_URL=https://uas-reporting.cfapps.eu10.hana.ondemand.com/odata/MonthlySubaccountCmCosts
 ```
+
+**Authentication Flow:**
+1. The backend first authenticates with SAP using OAuth client credentials
+2. Receives a Bearer token from the authentication endpoint
+3. Uses this token to make requests to the Usage and Cost APIs
 
 ### Installation
 
