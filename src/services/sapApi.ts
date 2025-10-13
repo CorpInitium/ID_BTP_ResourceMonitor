@@ -1,12 +1,11 @@
 import { UsageRecord } from '../types/usage';
 import { CostRecord } from '../types/cost';
 
-const EDGE_FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sap-usage-proxy`;
-const COST_EDGE_FUNCTION_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sap-cost-proxy`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export async function fetchUsageData(fromDate: string, toDate: string): Promise<UsageRecord[]> {
   try {
-    const url = `${EDGE_FUNCTION_URL}?fromDate=${fromDate}&toDate=${toDate}`;
+    const url = `${API_BASE_URL}/api/usage?fromDate=${fromDate}&toDate=${toDate}`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -34,7 +33,9 @@ export async function fetchUsageData(fromDate: string, toDate: string): Promise<
 
 export async function fetchCostData(): Promise<CostRecord[]> {
   try {
-    const response = await fetch(COST_EDGE_FUNCTION_URL, {
+    const url = `${API_BASE_URL}/api/cost`;
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
