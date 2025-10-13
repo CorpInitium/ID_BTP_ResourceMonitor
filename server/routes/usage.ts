@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
     const token = await getAccessToken();
 
-    const url = `${sapApiUrl}?$filter=reportYearMonth ge ${fromDate} and reportYearMonth le ${toDate}`;
+    const url = `${sapApiUrl}?fromDate=${fromDate}&toDate=${toDate}`;
 
     const response = await fetch(url, {
       method: 'GET',
