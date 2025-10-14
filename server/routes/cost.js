@@ -1,5 +1,7 @@
 import express from 'express';
 import { getAccessToken } from '../utils/auth.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = express.Router();
 
