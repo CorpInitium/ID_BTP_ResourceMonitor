@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 dotenv.config();
 export async function getAccessToken() {
   const authUrl = process.env.SAP_AUTH_URL;
