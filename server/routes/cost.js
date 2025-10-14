@@ -1,27 +1,19 @@
 import express from 'express';
-import { getAccessToken } from '../utils/auth';
-import dotenv from 'dotenv';
-dotenv.config();
+import { getAccessToken } from '../utils/auth.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { fromDate, toDate } = req.query;
-
-    if (!fromDate || !toDate) {
-      return res.status(400).json({ error: 'fromDate and toDate are required' });
-    }
-
-    const sapApiUrl = process.env.SAP_USAGE_API_URL;
+    const sapApiUrl = process.env.SAP_COST_API_URL;
 
     if (!sapApiUrl) {
-      return res.status(500).json({ error: 'SAP Usage API URL is not configured' });
+      return res.status(500).json({ error: 'SAP Cost API URL is not configured' });
     }
 
     const token = await getAccessToken();
 
-    const url = `${sapApiUrl}?fromDate=${fromDate}&toDate=${toDate}`;
+    const url = `${sapApiUrl}?$format=json`;
 
     const response = await fetch(url, {
       method: 'GET',
@@ -39,9 +31,9 @@ router.get('/', async (req, res) => {
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    console.error('Usage API Error:', error);
+    console.error('Cost API Error:', error);
     res.status(500).json({
-      error: error instanceof Error ? error.message : 'Failed to fetch usage data',
+      error: error instanceof Error ? error.message : 'Failed to fetch cost data',
     });
   }
 });

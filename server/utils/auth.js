@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-export async function getAccessToken(): Promise<string> {
+export async function getAccessToken() {
   const authUrl = process.env.SAP_AUTH_URL;
   const username = process.env.SAP_USERNAME;
   const password = process.env.SAP_PASSWORD;
@@ -26,7 +23,6 @@ export async function getAccessToken(): Promise<string> {
   }
 
   const data = await response.json();
-  console.log(data)
 
   if (!data.access_token) {
     throw new Error('No access token received from authentication service');

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"vite\"",
-    "dev:server": "tsx server/index.ts",
+    "dev:server": "node server/index.js",
     "dev:client": "vite",
     "build": "vite build",
     "lint": "eslint .",
