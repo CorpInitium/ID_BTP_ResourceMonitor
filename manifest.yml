@@ -1,0 +1,6 @@
+applications:
+- name: BTP_Resource_Monitoring
+  memory: 256M
+  buildpack: nodejs_buildpack
+  command: node server/index.js
+  path: .
