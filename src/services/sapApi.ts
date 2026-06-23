@@ -31,9 +31,9 @@ export async function fetchUsageData(fromDate: string, toDate: string): Promise<
   }
 }
 
-export async function fetchCostData(): Promise<CostRecord[]> {
+export async function fetchCostData(fromDate: string, toDate: string): Promise<CostRecord[]> {
   try {
-    const url = `/api/cost`;
+    const url = `/api/cost?fromDate=${fromDate}&toDate=${toDate}`;
 
     const response = await fetch(url, {
       method: 'GET',

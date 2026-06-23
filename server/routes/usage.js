@@ -1,5 +1,6 @@
 import express from 'express';
 import { getAccessToken } from '../utils/auth.js';
+import { buildSapApiUrl } from '../utils/sapApiUrl.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
 
     const token = await getAccessToken();
 
-    const url = `${sapApiUrl}?fromDate=${fromDate}&toDate=${toDate}`;
+    const url = buildSapApiUrl(sapApiUrl, { fromDate, toDate });
 
     const response = await fetch(url, {
       method: 'GET',

@@ -1,5 +1,6 @@
 import express from 'express';
 import { getAccessToken } from '../utils/auth.js';
+import { buildSapApiUrl } from '../utils/sapApiUrl.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -7,6 +8,12 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
+    const { fromDate, toDate } = req.query;
+
+    if (!fromDate || !toDate) {
+      return res.status(400).json({ error: 'fromDate and toDate are required' });
+    }
+
     const sapApiUrl = process.env.SAP_COST_API_URL;
 
     if (!sapApiUrl) {
@@ -15,7 +22,7 @@ router.get('/', async (req, res) => {
 
     const token = await getAccessToken();
 
-    const url = `${sapApiUrl}?$format=json`;
+    const url = buildSapApiUrl(sapApiUrl, { fromDate, toDate });
 
     const response = await fetch(url, {
       method: 'GET',

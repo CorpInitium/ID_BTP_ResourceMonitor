@@ -7,8 +7,14 @@ import UsageCharts from '../components/UsageCharts';
 import CostCharts from '../components/CostCharts';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import { getCurrentYearMonth } from '../utils/date';
+import { parseApiRecords } from '../utils/parseApiResponse';
+import { normalizeCostRecords } from '../utils/normalizeCostRecord';
 
 type ReportType = 'usage' | 'cost';
+
+const REPORT_FROM_DATE = '202401';
+const REPORT_TO_DATE = getCurrentYearMonth();
 
 export default function Reporting() {
   const [reportType, setReportType] = useState<ReportType>('usage');
@@ -26,46 +32,13 @@ export default function Reporting() {
     setError(null);
     try {
       const [usage, cost] = await Promise.all([
-        fetchUsageData('202501', '202510').catch(() => []),
-        fetchCostData().catch(() => []),
+        fetchUsageData(REPORT_FROM_DATE, REPORT_TO_DATE).catch(() => null),
+        fetchCostData(REPORT_FROM_DATE, REPORT_TO_DATE).catch(() => null),
       ]);
 
-      let usageRecords: UsageRecord[] = [];
-      if (Array.isArray(usage)) {
-        usageRecords = usage;
-      } else if (usage && typeof usage === 'object') {
-        if (Array.isArray(usage.content)) {
-          usageRecords = usage.content;
-        } else if (Array.isArray(usage.data)) {
-          usageRecords = usage.data;
-        } else if (Array.isArray(usage.records)) {
-          usageRecords = usage.records;
-        } else if (Array.isArray(usage.results)) {
-          usageRecords = usage.results;
-        }
-      }
-
-      let costRecords: CostRecord[] = [];
-      if (Array.isArray(cost)) {
-        costRecords = cost;
-      } else if (cost && typeof cost === 'object') {
-        if (Array.isArray(cost.value)) {
-          costRecords = cost.value;
-        } else if (Array.isArray(cost.d?.results)) {
-          costRecords = cost.d.results;
-        } else if (Array.isArray(cost.content)) {
-          costRecords = cost.content;
-        } else if (Array.isArray(cost.data)) {
-          costRecords = cost.data;
-        } else if (Array.isArray(cost.records)) {
-          costRecords = cost.records;
-        } else if (Array.isArray(cost.results)) {
-          costRecords = cost.results;
-        }
-      }
-
-      setUsageData(usageRecords);
-      setCostData(costRecords);
+      setUsageData(parseApiRecords<UsageRecord>(usage) ?? []);
+      const costRecords = parseApiRecords<Record<string, unknown>>(cost);
+      setCostData(costRecords ? normalizeCostRecords(costRecords) : []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -104,6 +77,10 @@ export default function Reporting() {
             </button>
           </div>
         </div>
+        <p className="text-sm text-slate-600">
+          Showing data from {REPORT_FROM_DATE.replace(/(\d{4})(\d{2})/, '$1-$2')} to{' '}
+          {REPORT_TO_DATE.replace(/(\d{4})(\d{2})/, '$1-$2')}
+        </p>
       </div>
 
       {error && <ErrorMessage message={error} onRetry={loadData} />}

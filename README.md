@@ -24,12 +24,16 @@ Create a `.env` file in the root directory with the following variables:
 ```
 VITE_API_URL=http://localhost:3001
 
-SAP_AUTH_URL=https://your-auth-domain.authentication.eu10.hana.ondemand.com/oauth/token?grant_type=client_credentials&response_type=token
+SAP_AUTH_URL=https://your-auth-domain.authentication.<region>.hana.ondemand.com/oauth/token?grant_type=client_credentials&response_type=token
 SAP_USERNAME=your_sap_client_id
 SAP_PASSWORD=your_sap_client_secret
-SAP_USAGE_API_URL=https://uas-reporting.cfapps.eu10.hana.ondemand.com/odata/MonthlySubaccountUsage
-SAP_COST_API_URL=https://uas-reporting.cfapps.eu10.hana.ondemand.com/odata/MonthlySubaccountCmCosts
+SAP_USAGE_API_URL=https://uas-reporting.cfapps.<region>.hana.ondemand.com/reports/v1/monthlyUsage
+SAP_COST_API_URL=https://uas-reporting.cfapps.<region>.hana.ondemand.com/reports/v1/monthlySubaccountsCost
 ```
+
+Replace `<region>` with your landscape (e.g. `us10`, `eu10`). Credentials come from a **Usage Data Management** service instance with plan `reporting-ga-admin`.
+
+Legacy OData endpoints are also supported; the backend appends `$format=json` automatically when the URL contains `/odata/`.
 
 **Authentication Flow:**
 1. The backend first authenticates with SAP using OAuth client credentials
@@ -69,7 +73,7 @@ npm run build
 ### Backend API Routes
 
 - `GET /api/usage?fromDate={YYYYMM}&toDate={YYYYMM}` - Fetch usage data
-- `GET /api/cost` - Fetch cost data
+- `GET /api/cost?fromDate={YYYYMM}&toDate={YYYYMM}` - Fetch cost data
 - `GET /health` - Health check endpoint
 
 ## Technologies

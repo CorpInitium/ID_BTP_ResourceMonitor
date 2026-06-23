@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { RefreshCw, Filter } from 'lucide-react';
 import { fetchUsageData } from '../services/sapApi';
 import { UsageRecord, Filters } from '../types/usage';
@@ -8,10 +8,12 @@ import MetricCards from '../components/MetricCards';
 import UsageTable from '../components/UsageTable';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
+import { getCurrentYearMonth } from '../utils/date';
+import { parseApiRecords } from '../utils/parseApiResponse';
 
 export default function UsageMonitor() {
-  const [fromDate, setFromDate] = useState('202501');
-  const [toDate, setToDate] = useState('202510');
+  const [fromDate, setFromDate] = useState('202401');
+  const [toDate, setToDate] = useState(getCurrentYearMonth);
   const [rawData, setRawData] = useState<UsageRecord[]>([]);
   const [filters, setFilters] = useState<Filters>({
     globalAccounts: [],
@@ -56,28 +58,16 @@ export default function UsageMonitor() {
       const data = await fetchUsageData(fromDate, toDate);
       console.log('Raw API Response:', data);
 
-      let records: UsageRecord[] = [];
+      const records = parseApiRecords<UsageRecord>(data);
 
-      if (Array.isArray(data)) {
-        records = data;
-      } else if (data && typeof data === 'object') {
-        if (Array.isArray(data.content)) {
-          records = data.content;
-        } else if (Array.isArray(data.data)) {
-          records = data.data;
-        } else if (Array.isArray(data.records)) {
-          records = data.records;
-        } else if (Array.isArray(data.results)) {
-          records = data.results;
-        } else {
-          console.error('Unknown data structure:', data);
-          setRawData([]);
-          setError(`Invalid data format. Response structure: ${JSON.stringify(Object.keys(data))}`);
-          return;
-        }
-      } else {
+      if (!records) {
+        console.error('Unknown data structure:', data);
         setRawData([]);
-        setError('Invalid data format received from server');
+        setError(
+          `Invalid data format. Response structure: ${
+            data && typeof data === 'object' ? JSON.stringify(Object.keys(data)) : 'unknown'
+          }`
+        );
         return;
       }
 
